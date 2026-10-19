@@ -23,6 +23,29 @@ export default function App() {
       track.name.toLowerCase().includes(query);
   });
 
+  function moveTrack(track, direction) {
+    const index = playlist.indexOf(track);
+    const destination = index + direction;
+
+    if (
+      index === -1 ||
+      destination < 0 ||
+      destination >= playlist.length
+    ) {
+      return;
+    }
+
+    const reordered = [...playlist];
+    const movedTrack = reordered[index];
+    reordered[index] = reordered[destination];
+    reordered[destination] = movedTrack;
+
+    setPlaylist(reordered);
+  }
+
+
+
+
   function removeTrack(track) {
     const index = playlist.indexOf(track);
     if (index === -1) return;
@@ -395,7 +418,22 @@ export default function App() {
                   type="button"
                   onClick={() => removeTrack(track)}
                   aria-label={`Remove ${track.name} from playlist?`}>
-                  Remove'
+                  Remove
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveTrack(track, -1)}
+                  disabled={playlist.indexOf(track) === 0}
+                  aria-label={`Move ${track.name} up`}>
+                  ↑
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => moveTrack(track, 1)}
+                  disabled={playlist.indexOf(track) === playlist.length - 1}
+                  aria-label={`Move ${track.name} down`}>
+                  ↓
                 </button>
               </li>
             ))}
