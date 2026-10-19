@@ -22,6 +22,30 @@ export default function App() {
     return query === "" ||
       track.name.toLowerCase().includes(query);
   });
+
+  function removeTrack(track) {
+    const index = playlist.indexOf(track);
+    if (index === -1) return;
+
+    const remaining = playlist.filter((item) =>
+      item !== track);
+    setPlaylist(remaining);
+
+    if (track === file) {
+      const audio = audioRef.current;
+
+      playOnLoadRef.current =
+        remaining.length > 0 && !audio.paused && !audio.ended;
+
+      const nextTrack = remaining[Math.min(index, remaining.length - 1)] ?? null
+
+      audio.pause();
+      setError("");
+      setFile(nextTrack);
+    }
+  }
+
+
   function selecTrack(track) {
     if (!track) return;
 
@@ -366,6 +390,12 @@ export default function App() {
                   aria-current={file === track ? "true" : undefined}>
                   {file === track ? " > " : ""}
                   {track.name}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeTrack(track)}
+                  aria-label={`Remove ${track.name} from playlist?`}>
+                  Remove'
                 </button>
               </li>
             ))}
