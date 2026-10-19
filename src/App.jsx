@@ -9,6 +9,7 @@ export default function App() {
   const audioRef = useRef(null);
   const [file, setFile] = useState(null);
   const [search, setSearch] = useState("");
+  const [repeat, setRepeat] = useState("off");
   const [playlist, setPlaylist] = useState([]);
   const graphRef = useRef(null);
   const [analyser, setAnalyser] = useState(null);
@@ -87,6 +88,26 @@ export default function App() {
     playOnLoadRef.current = true;
     setFile(track);
   }
+
+  function handleTrackEnded() {
+    if (!file || playlist.length === 0) return;
+
+    if (repeat === "one") {
+      selecTrack(file);
+      return;
+    }
+
+    const index = playlist.indexOf(file);
+
+    if (index === -1) return;
+
+    if (index < playlist.length - 1) {
+      selecTrack(playlist[index + 1]);
+    } else if (repeat === "all") {
+      selecTrack(playlist[0]);
+    }
+  }
+
 
   function changeTrack(direction) {
     const currentIndex = playlist.indexOf(file);
@@ -368,7 +389,7 @@ export default function App() {
       />
 
       <p> {file ? file.name : "Choose your Slop "} </p>
-      <audio ref={audioRef} controls onPlay={connectAudio} onCanPlay={playLoadedTrack} onEnded={() => changeTrack(1)} />
+      <audio ref={audioRef} controls onPlay={connectAudio} onCanPlay={playLoadedTrack} onEnded={handleTrackEnded} />
 
       <div>
         <button
@@ -389,6 +410,17 @@ export default function App() {
       </div>
       <section>
         <h2>Playlist</h2>
+        <label>
+          Repeat
+          <select
+            value={repeat}
+            onChange={(event) =>
+              setRepeat(event.target.value)}>
+            <option value="off">Off</option>
+            <option value="one">This Track</option>
+            <option value="all">Full Playlist</option>
+          </select>
+        </label>
         <label>
           Search Playlist
           <input
