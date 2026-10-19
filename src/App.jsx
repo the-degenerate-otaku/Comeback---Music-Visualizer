@@ -8,6 +8,7 @@ export default function App() {
   const graphRef = useRef(null);
   const [analyser, setAnalyser] = useState(null);
   const [error, setError] = useState(null);
+  const [mode, setMode] = useState("waveform");
 
   async function connectAudio() {
     try {
@@ -38,10 +39,12 @@ export default function App() {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    console.log("Canvas size:", canvas.width, canvas.height);
+
     let frameId;
 
     const samples = new Uint8Array(analyser ? analyser.fftSize : 2048);
+    const frequencies = new Uint8Array(analyser ?
+      analyser.frequencyBinCount : 1024);
 
     function draw() {
       samples.fill(128);
@@ -51,14 +54,50 @@ export default function App() {
         analyser.getByteTimeDomainData(samples);
       }
 
-
-      console.log(
-        "Analyser:", Boolean(analyser),
-        "Paused", audioRef.current.paused,
-        "Smaple range", Math.min(...samples), Math.max(...samples)
-      );
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (mode === "spectrum") {
+        frequencies.fill(0);
+
+        if (analyser && !audio.paused && !audio.ended) {
+          analyser.getByteFrequencyData(frequencies);
+        }
+
+        const barCount = 48;
+        const slotWidth = canvas.width / barCount;
+
+
+        ctx.fillStyle = "#c499ff";
+        for (let bar = 0; bar < barCount; bar++) {
+          const start = Math.floor(
+            (bar / barCount) * frequencies.length
+          );
+
+          const end = Math.floor(
+            ((bar + 1) / barCount) * frequencies.length
+          );
+
+          let total = 0;
+          for (let i = start; i < end; i++) {
+            total += frequencies[i];
+
+          }
+
+          const strength = total / (end - start) / 255;
+          const barHeight = Math.max(2, strength * (canvas.height - 30)
+          );
+
+          ctx.fillRect(
+            bar * slotWidth + 3,
+            canvas.height - barHeight - 10,
+            slotWidth - 6,
+            barHeight
+          );
+        }
+        frameId = requestAnimationFrame(draw);
+        return;
+
+      }
       ctx.strokeStyle = "#750150";
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -88,10 +127,11 @@ export default function App() {
 
       frameId = requestAnimationFrame(draw);
     }
+
     frameId = requestAnimationFrame(draw);
 
     return () => cancelAnimationFrame(frameId);
-  }, [analyser]);
+  }, [analyser, mode]);
 
 
   useEffect(() => {
@@ -116,7 +156,17 @@ export default function App() {
 
   return (
     <main>
-      <h1>Music Visualizer</h1>
+      <h1>Music go be wave cause why not ?</h1>
+      <label>
+        Visuals:{""}
+        <select value={mode}
+          onChange={(event) =>
+            setMode(event.target.value)}
+        >
+          <option value="waveform">Waveform</option>
+          <option value="spectrum">Specturm</option>
+        </select>
+      </label>
       <canvas
         ref={canvasRef}
         width="1000"
