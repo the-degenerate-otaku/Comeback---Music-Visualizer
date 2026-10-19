@@ -85,7 +85,7 @@ export default function App() {
       ctx.fillStyle = "#aa80ff";
       ctx.globalAlpha = 0.5;
 
-      for (const dot of particlesEnabled? dots : []) {
+      for (const dot of particlesEnabled ? dots : []) {
         if (!audio.paused && !audio.ended) {
           dot.y -= dot.speed * (1 + energy * 8) * delta;
 
@@ -211,6 +211,17 @@ export default function App() {
           <option value="waveform">Waveform</option>
           <option value="spectrum">Specturm</option>
         </select>
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={particlesEnabled}
+          onChange={(event) =>
+            setParticlesEnabled(event.target.checked)
+          }
+        />
+        Particles
       </label>
       <canvas
         ref={canvasRef}
