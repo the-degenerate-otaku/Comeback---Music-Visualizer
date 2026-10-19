@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
+
 export default function App() {
   const canvasRef = useRef(null);
+  const playerRef = useRef(null);
   const playOnLoadRef = useRef(false);
   const audioRef = useRef(null);
   const [file, setFile] = useState(null);
+  const [search, setSearch] = useState("");
   const [playlist, setPlaylist] = useState([]);
   const graphRef = useRef(null);
   const [analyser, setAnalyser] = useState(null);
@@ -14,6 +17,11 @@ export default function App() {
   const [particlesEnabled, setParticlesEnabled] = useState(true);
 
 
+  const filteredPlaylist = playlist.filter((track) => {
+    const query = search.trim().toLowerCase();
+    return query === "" ||
+      track.name.toLowerCase().includes(query);
+  });
   function selecTrack(track) {
     if (!track) return;
 
@@ -53,6 +61,21 @@ export default function App() {
       setError(`Start the track goddamit ${err.message}`);
     });
   }
+
+  async function toggleFullScreen() {
+
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await playerRef.current.requestFullscreen();
+      }
+    } catch (err) {
+      setError(`Fullscreen unavailable: ${err.message}`);
+    }
+  }
+
+
 
   async function connectAudio() {
     try {
@@ -243,7 +266,12 @@ export default function App() {
 
 
   return (
-    <main>
+    <main ref={playerRef}>
+      <button
+        type="button"
+        onClick={toggleFullScreen}>
+        Toggle FullScreen
+      </button>
       <h1>Music go be wave cause why not ?</h1>
       <label>
         Visuals:{""}
@@ -314,12 +342,23 @@ export default function App() {
       </div>
       <section>
         <h2>Playlist</h2>
+        <label>
+          Search Playlist
+          <input
+            type="search"
+            placeholder="Search By filename"
+            value={search}
+            onChange={(event) =>
+              setSearch(event.target.value)}
+          />
+        </label>
 
-        {playlist.length === 0 ? (
-          <p>Add some tunes gng</p>
+
+        {filteredPlaylist.length === 0 ? (
+          <p>{playlist.length === 0 ? "Add some tunes gng" : "Couldnt find em"}</p>
         ) : (
           <ol>
-            {playlist.map((track, index) => (
+            {filteredPlaylist.map((track, index) => (
               <li key={index}>
                 <button
                   type="buttton"
