@@ -3,13 +3,56 @@ import "./App.css";
 
 export default function App() {
   const canvasRef = useRef(null);
+  const playOnLoadRef = useRef(false);
   const audioRef = useRef(null);
   const [file, setFile] = useState(null);
+  const [playlist, setPlaylist] = useState([]);
   const graphRef = useRef(null);
   const [analyser, setAnalyser] = useState(null);
   const [error, setError] = useState(null);
   const [mode, setMode] = useState("waveform");
   const [particlesEnabled, setParticlesEnabled] = useState(true);
+
+
+  function selecTrack(track) {
+    if (!track) return;
+
+    setError("")
+
+    if (track === file) {
+      audioRef.current.currentTime = 0;
+
+      audioRef.current.play().catch((err) => {
+        setError(err.message)
+      });
+
+      return;
+    }
+
+    playOnLoadRef.current = true;
+    setFile(track);
+  }
+
+  function changeTrack(direction) {
+    const currentIndex = playlist.indexOf(file);
+    if (currentIndex === -1) return;
+
+    const nextIndex = currentIndex + direction;
+
+    if (nextIndex >= 0 && nextIndex < playlist.length) {
+      selecTrack(playlist[nextIndex]);
+    }
+  }
+
+  function playLoadedTrack() {
+    if (!playOnLoadRef.current) return;
+
+    playOnLoadRef.current = false;
+
+    audioRef.current.play().catch((err) => {
+      setError(`Start the track goddamit ${err.message}`);
+    });
+  }
 
   async function connectAudio() {
     try {
@@ -234,11 +277,15 @@ export default function App() {
       <input
         type="file"
         accept="audio/*"
+        multiple
         onChange={(event) => {
-          const selectedFile = event.target.files?.[0];
+          const selectedFiles = Array.from(event.target.files ?? []);
 
-          if (selectedFile) {
-            setFile(selectedFile);
+
+          if (selectedFiles.length > 0) {
+            playOnLoadRef.current = false;
+            setPlaylist(selectedFiles);
+            setFile(selectedFiles[0]);
           }
 
           event.target.value = "";
@@ -246,7 +293,46 @@ export default function App() {
       />
 
       <p> {file ? file.name : "Choose your Slop "} </p>
-      <audio ref={audioRef} controls onPlay={connectAudio} />
+      <audio ref={audioRef} controls onPlay={connectAudio} onCanPlay={playLoadedTrack} onEnded={() => changeTrack(1)} />
+
+      <div>
+        <button
+          type="button"
+          disabled={playlist.indexOf(file) <= 0}
+          onClick={() => changeTrack(-1)}>
+          Previous
+        </button>
+
+        <button
+          type="button"
+          disabled={playlist.indexOf(file) === -1 ||
+            playlist.indexOf(file) >= playlist.length - 1
+          }
+          onClick={() => changeTrack(1)} >
+          Next
+        </button>
+      </div>
+      <section>
+        <h2>Playlist</h2>
+
+        {playlist.length === 0 ? (
+          <p>Add some tunes gng</p>
+        ) : (
+          <ol>
+            {playlist.map((track, index) => (
+              <li key={index}>
+                <button
+                  type="buttton"
+                  onClick={() => setFile(track)}
+                  aria-current={file === track ? "true" : undefined}>
+                  {file === track ? " > " : ""}
+                  {track.name}
+                </button>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
       {error && <p role="alert">{error}</p>}
     </main>
   );
