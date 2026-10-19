@@ -1,0 +1,34 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans;
+  background: #0c111b;
+  color:#eef3ff;
+}
+
+#root {
+  width: 100%;
+}
+
+main {
+  margin: auto;
+  padding: 24px;
+}
+
+canvas{
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #1c143d;
+  border: 1px solid #531983;
+  border-radius: 14px;
+}
+
+audio {
+  display: block; 
+  width: 100%;
+  margin: 20px 0;
+}
