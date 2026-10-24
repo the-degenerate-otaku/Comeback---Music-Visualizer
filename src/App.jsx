@@ -11,6 +11,10 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [repeat, setRepeat] = useState("off");
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [muted, setMuted] = useState(false);
   const [playlist, setPlaylist] = useState([]);
   const graphRef = useRef(null);
   const [analyser, setAnalyser] = useState(null);
@@ -142,6 +146,16 @@ export default function App() {
     } catch (err) {
       setError(`Fullscreen unavailable: ${err.message}`);
     }
+  }
+
+  function formatTime(sec) {
+    if (!Number.isFinite(sec)) return "0:00";
+
+    const min = Math.floor(sec / 60);
+    const remainder = Math.floor(sec % 60);
+
+    return min + ":" + String(remainder).padStart(2, "0");
+
   }
 
   async function togglePlayback() {
@@ -413,11 +427,30 @@ export default function App() {
         setIsPlaying(true);
         connectAudio();
       }}
+
+        onTimeUpdate={(event) => {
+          setCurrentTime(event.currentTarget.currentTime);
+        }}
+        onDurationChange={(event) => {
+          const length = event.currentTarget.duration;
+          setDuration(Number.isFinite(length) ? length : 0);
+        }}
+        onEmptied={() => {
+          setCurrentTime(0);
+          setDuration(0);
+        }}
         onPause={() => setIsPlaying(false)}
         onCanPlay={playLoadedTrack} onEnded={() => {
           setIsPlaying(false);
           handleTrackEnded();
-        }} />
+        }}
+
+        onVolumeChange={(event) => {
+          setVolume(event.currentTarget.volume);
+          setMuted(event.currentTarget.muted);
+        }}
+      />
+
 
       <button
         type="button"
@@ -425,6 +458,71 @@ export default function App() {
         disabled={!file}>
         {isPlaying ? "Pause" : "Play"}
       </button>
+
+      <label>
+        Volume
+
+
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={(event) => {
+            const level = Number(event.target.value);
+            audioRef.current.volume = level;
+
+            setVolume(level);
+            audioRef.current.volume = level;
+
+            if (level > 0) {
+              setMuted(false);
+              audioRef.current.muted = false;
+            }
+          }}
+        />
+      </label>
+
+      <span>{Math.round(volume * 100)}%</span>
+
+      <button
+        type="button"
+        onClick={() => {
+          const audio = audioRef.current;
+
+          if (audio.muted || audio.volume === 0) {
+            if (audio.volume === 0) {
+              audio.volume = 0.5;
+            }
+            audio.muted = false;
+          } else {
+            audio.muted = true;
+          }
+        }}
+      >
+        {muted || volume === 0 ? "Unmute" : "Mute"}
+      </button>
+      <div>
+        <span>{formatTime(currentTime)}</span>
+
+        <input
+          type="range"
+          aria-label="Playback"
+          min="0"
+          max={duration || 1}
+          step={0.1}
+          value={Math.min(currentTime, duration || 0)}
+          disabled={!file || duration <= 0}
+          onChange={(event) => {
+            const position = Number(event.target.value);
+            audioRef.current.currentTime = position;
+            setCurrentTime(position);
+          }
+          }
+        />
+        <span>{formatTime(duration)}</span>
+      </div>
 
       <div>
         <button
