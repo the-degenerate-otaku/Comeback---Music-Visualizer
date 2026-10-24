@@ -10,6 +10,7 @@ export default function App() {
   const [file, setFile] = useState(null);
   const [search, setSearch] = useState("");
   const [repeat, setRepeat] = useState("off");
+  const [isPlaying, setIsPlaying] = useState(false);
   const [playlist, setPlaylist] = useState([]);
   const graphRef = useRef(null);
   const [analyser, setAnalyser] = useState(null);
@@ -141,6 +142,25 @@ export default function App() {
     } catch (err) {
       setError(`Fullscreen unavailable: ${err.message}`);
     }
+  }
+
+  async function togglePlayback() {
+    const audio = audioRef.current;
+    if (!file || !audio) return;
+
+    try {
+      setError("")
+
+      if (audio.paused) {
+        await audio.play();
+      } else {
+        audio.pause();
+      }
+    } catch (err) {
+      setError(`Playback aint workking: ${err.message}`);
+
+    }
+
   }
 
 
@@ -389,7 +409,22 @@ export default function App() {
       />
 
       <p> {file ? file.name : "Choose your Slop "} </p>
-      <audio ref={audioRef} controls onPlay={connectAudio} onCanPlay={playLoadedTrack} onEnded={handleTrackEnded} />
+      <audio ref={audioRef} controls onPlay={() => {
+        setIsPlaying(true);
+        connectAudio();
+      }}
+        onPause={() => setIsPlaying(false)}
+        onCanPlay={playLoadedTrack} onEnded={() => {
+          setIsPlaying(false);
+          handleTrackEnded();
+        }} />
+
+      <button
+        type="button"
+        onClick={togglePlayback}
+        disabled={!file}>
+        {isPlaying ? "Pause" : "Play"}
+      </button>
 
       <div>
         <button
