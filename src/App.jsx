@@ -158,6 +158,55 @@ export default function App() {
 
   }
 
+  useEffect(() => {
+    function handleKeydown(event) {
+      if (
+        event.target instanceof HTMLElement && event.target.closest(
+          "input, textarea, select,button, a, audio, [contenteditable]"
+        )
+      ) {
+        return
+      }
+      if (event.ctrlKey || event.altkey || event.metaKey) return;
+      const audio = audioRef.current;
+      if (!audio || !audio.getAttribute("src")) return;
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        if (event.repeat) return;
+
+        if (audio.paused) {
+          audio.play().catch((err) =>
+            setError(err.message));
+        } else {
+          audio.pause();
+        }
+      }
+
+      if (
+        event.code === "ArrowLeft" || event.code === "ArrowRight"
+      ) {
+        if (!Number.isFinite(audio.duration))
+          return;
+
+        event.preventDefault();
+
+        const seconds = event.code === "ArrowRight" ? 5 : -5;
+
+        audio.currentTime = Math.max(
+          0,
+          Math.min(audio.duration, audio.currentTime + seconds)
+        );
+      }
+    }
+
+    window.addEventListener("keydown", handleKeydown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+    };
+  }, []);
+
   async function togglePlayback() {
     const audio = audioRef.current;
     if (!file || !audio) return;
