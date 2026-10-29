@@ -350,7 +350,7 @@ export default function App() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
-      ctx.fillStyle = "#aa80ff";
+      ctx.fillStyle = "#600d0d";
       ctx.globalAlpha = 0.5;
 
       for (const dot of particlesEnabled ? dots : []) {
@@ -380,7 +380,7 @@ export default function App() {
         }
 
 
-        ctx.fillStyle = "#c499ff";
+        ctx.fillStyle = "#5c0808";
         for (let bar = 0; bar < barCount; bar++) {
           const start = Math.floor(
             (bar / barCount) * frequencies.length
@@ -411,7 +411,7 @@ export default function App() {
         return;
 
       }
-      ctx.strokeStyle = "#750150";
+      ctx.strokeStyle = "#150458f0";
       ctx.lineWidth = 2;
       ctx.beginPath();
 
@@ -604,53 +604,52 @@ export default function App() {
         {muted || volume === 0 ? "Unmute" : "Mute"}
       </button>
       <div>
-
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          width="100%"
-          height="60"
-          aria-hidden="true"
-        >
-          {waveformPeaks.map((peak, index) => {
-            const slot = 600 / waveformPeaks.length
-            const height = Math.max(2, peak * 56);
-            const played = duration > 0 && index / waveformPeaks.length < currentTime / duration;
-
-            return (
-              <rect
-                key={index}
-                x={index * slot}
-                y={(60 - height) / 2}
-                width={slot * 0.7}
-                height={height}
-                rx="1"
-                fill={played ? "#fefefe" : "#111111fe"}
-              />
-            );
-          })}
-        </svg>
-
-
-
-
         <span>{formatTime(currentTime)}</span>
+        <div className="waveform-progress-seaker">
 
-        <input
-          type="range"
-          aria-label="Playback"
-          min="0"
-          max={duration || 1}
-          step={0.1}
-          value={Math.min(currentTime, duration || 0)}
-          disabled={!file || duration <= 0}
-          onChange={(event) => {
-            const position = Number(event.target.value);
-            audioRef.current.currentTime = position;
-            setCurrentTime(position);
-          }
-          }
-        />
+          <svg
+            viewBox="0 0 800 60"
+            preserveAspectRatio="none"
+            width="100%"
+            height="60"
+            aria-hidden="true"
+          >
+            {waveformPeaks.map((peak, index) => {
+              const slot = 800 / waveformPeaks.length
+              const height = Math.max(2, peak * 56);
+              const played = duration > 0 && index / waveformPeaks.length < currentTime / duration;
+
+              return (
+                <rect
+                  key={index}
+                  x={index * slot}
+                  y={(60 - height) / 2}
+                  width={slot * 0.7}
+                  height={height}
+                  rx="1"
+                  fill={played ? "#fefefe" : "#ff0000fe"}
+                />
+              );
+            })}
+          </svg>
+
+          <input
+            className="waveform-progress-seaker-input"
+            type="range"
+            aria-label="Playback"
+            min="0"
+            max={duration || 1}
+            step={0.1}
+            value={Math.min(currentTime, duration || 0)}
+            disabled={!file || duration <= 0}
+            onChange={(event) => {
+              const position = Number(event.target.value);
+              audioRef.current.currentTime = position;
+              setCurrentTime(position);
+            }
+            }
+          />
+        </div>
         <span>{formatTime(duration)}</span>
       </div>
 

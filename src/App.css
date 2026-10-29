@@ -5,7 +5,7 @@
 body {
   margin: 0;
   font-family: "Segoe UI", sans;
-  background: #0c111b;
+  background: #050505;
   color:#eef3ff;
 }
 
@@ -22,8 +22,8 @@ canvas{
   display: block;
   width: 100%;
   height: auto;
-  background: #1c143d;
-  border: 1px solid #531983;
+  background: #000000;
+  border: 1px solid #000000;
   border-radius: 14px;
 }
 
@@ -40,4 +40,26 @@ main:fullscreen {
   overflow: auto;
   padding: 24px;
   background: #000000;
+}
+
+.waveform-progress-seaker {
+  display: grid;
+}
+
+.waveform-progress-seaker > svg,
+.waveform-progress-seaker-input {
+  grid-area: 1 / 1;
+}
+
+.waveform-progress-seaker-input {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.waveform-progress-seaker:focus-within {
+  outline: 2px solid #fe000072;
+  outline-offset: 4px;
 }
