@@ -13,6 +13,7 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [waveformPeaks, setWaveformPeaks] = useState([]);
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);
   const [playlist, setPlaylist] = useState([]);
@@ -207,6 +208,58 @@ export default function App() {
     };
   }, []);
 
+
+  useEffect(() => {
+    let cancelled = false;
+    setWaveformPeaks([]);
+
+    if (!file) return;
+
+    async function readWaveform() {
+      const context = new AudioContext();
+
+      try {
+        const bytes = await file.arrayBuffer();
+        const buffer = await
+          context.decodeAudioData(bytes);
+        const channel = buffer.getChannelData(0);
+
+        const count = Math.min(160, channel.length);
+        const peaks = [];
+
+        for (let bar = 0; bar < count; bar++) {
+          const start = Math.floor(bar * channel.length / count);
+          const end = Math.floor((bar + 1) * channel.length / count);
+
+          let peak = 0;
+
+          for (let i = start; i < end; i++) {
+            peak = Math.max(peak, Math.abs(channel[i]));
+          }
+
+          peaks.push(peak);
+
+        }
+
+        if (!cancelled) {
+          setWaveformPeaks(peaks);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError("Waveform preview unavailable: " + err.message);
+        }
+      } finally {
+        await context.close();
+      }
+    }
+
+    readWaveform();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [file]);
+
   async function togglePlayback() {
     const audio = audioRef.current;
     if (!file || !audio) return;
@@ -225,8 +278,6 @@ export default function App() {
     }
 
   }
-
-
 
   async function connectAudio() {
     try {
@@ -553,6 +604,36 @@ export default function App() {
         {muted || volume === 0 ? "Unmute" : "Mute"}
       </button>
       <div>
+
+        <svg
+          viewBox="0 0 800 60"
+          preserveAspectRatio="none"
+          width="100%"
+          height="60"
+          aria-hidden="true"
+        >
+          {waveformPeaks.map((peak, index) => {
+            const slot = 600 / waveformPeaks.length
+            const height = Math.max(2, peak * 56);
+            const played = duration > 0 && index / waveformPeaks.length < currentTime / duration;
+
+            return (
+              <rect
+                key={index}
+                x={index * slot}
+                y={(60 - height) / 2}
+                width={slot * 0.7}
+                height={height}
+                rx="1"
+                fill={played ? "#fefefe" : "#111111fe"}
+              />
+            );
+          })}
+        </svg>
+
+
+
+
         <span>{formatTime(currentTime)}</span>
 
         <input
@@ -592,6 +673,7 @@ export default function App() {
       </div>
       <section>
         <h2>Playlist</h2>
+        <p> Waveform : {waveformPeaks.length} </p>
         <label>
           Repeat
           <select
