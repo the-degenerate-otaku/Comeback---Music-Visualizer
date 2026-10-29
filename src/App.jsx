@@ -21,7 +21,6 @@ export default function App() {
   const [analyser, setAnalyser] = useState(null);
   const [error, setError] = useState(null);
   const [mode, setMode] = useState("waveform");
-  const [particlesEnabled, setParticlesEnabled] = useState(true);
 
 
   const filteredPlaylist = playlist.filter((track) => {
@@ -315,19 +314,7 @@ export default function App() {
     const frequencies = new Uint8Array(analyser ?
       analyser.frequencyBinCount : 1024);
 
-    const dots = Array.from({ length: 40 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      radius: 1 + Math.random() * 2,
-      speed: 20 + Math.random() * 30,
-    }));
-
-    let previousTime = 0;
-
-    function draw(time) {
-      const delta = previousTime
-        ? Math.min((time - previousTime) / 1000, 0.05) : 0;
-      previousTime = time;
+    function draw() {
 
       samples.fill(128);
 
@@ -336,41 +323,10 @@ export default function App() {
         analyser.getByteTimeDomainData(samples);
       }
 
-      let energy = 0;
-      for (const sample of samples) {
-        const amplitude = (sample - 128) / 128;
-        energy += amplitude * amplitude;
-      }
-
-      energy = Math.sqrt(energy / samples.length);
-
       const barCount = 48;
       const slotWidth = canvas.width / barCount;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-
-      ctx.fillStyle = "#600d0d";
-      ctx.globalAlpha = 0.5;
-
-      for (const dot of particlesEnabled ? dots : []) {
-        if (!audio.paused && !audio.ended) {
-          dot.y -= dot.speed * (1 + energy * 8) * delta;
-
-          if (dot.y < -10) {
-            dot.y = canvas.height + 10;
-            dot.x = Math.random() * canvas.width;
-          }
-        }
-
-        ctx.beginPath();
-        ctx.arc(
-          dot.x, dot.y, dot.radius * (1 + energy * 3), 0, Math.PI * 2
-        );
-        ctx.fill();
-      }
-
-      ctx.globalAlpha = 1;
 
       if (mode === "spectrum") {
         frequencies.fill(0);
@@ -444,7 +400,7 @@ export default function App() {
     frameId = requestAnimationFrame(draw);
 
     return () => cancelAnimationFrame(frameId);
-  }, [analyser, mode, particlesEnabled]);
+  }, [analyser, mode]);
 
 
   useEffect(() => {
@@ -486,16 +442,6 @@ export default function App() {
         </select>
       </label>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={particlesEnabled}
-          onChange={(event) =>
-            setParticlesEnabled(event.target.checked)
-          }
-        />
-        Particles
-      </label>
       <canvas
         ref={canvasRef}
         width="1000"
