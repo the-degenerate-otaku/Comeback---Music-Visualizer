@@ -23,7 +23,7 @@ main {
 
 canvas{
   display: block;
-  width: strech;
+  width: stretch;
   height: 300px;
   background:transparent;
   border: 0px;
@@ -131,11 +131,13 @@ button:disabled{opacity: 0.4;}
 .Playlist-pane input[type="search"] {
   display: block;
   width: strech;
-  margin: 16px 0px;
+  margin: 8px 0px 0px;
   padding: 12px;
   color: inherit;
   background: transparent ;
   border: 1px solid #333;
+  box-sizing: border-box;
+
 }
 
 main > [role="alert"] {
@@ -231,3 +233,46 @@ main > [role="alert"] {
   font-variant-numeric: tabular-nums;
 }
 
+.Currently-playing {
+  margin: 24px 0px 12px;
+  overflow-wrap:anywhere ;
+  color: #ffffff;
+  font: 400 24px Georgia, serif;
+}
+.Currently-playing::before {
+  content: "Currently Playing";
+  display: block;
+  margin-bottom: 8px;
+  color: #858080;
+  font: 11px "Segoe UI", sans-serif;
+  letter-spacing: 2px;
+
+}
+
+.Playlist-pane label {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+
+.Playlist-pane select {
+  margin-left: 8px;
+}
+
+input[type = "file"] {
+  color: #888;
+  font-size: 12px;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 12px;
+  color: #ffffff;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 4px;
+  cursor: pointer;
+}
+input[type="file"]::file-selector-button:hover {
+  border-color: #4263ff;
+}

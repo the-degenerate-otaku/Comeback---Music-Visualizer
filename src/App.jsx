@@ -469,7 +469,7 @@ export default function App() {
           }}
         />
 
-        <p> {file ? file.name : "Choose your Slop "} </p>
+        <p className="Currently-playing"> {file ? file.name : "Choose your Tune "} </p>
         <audio ref={audioRef} onPlay={() => {
           setIsPlaying(true);
           connectAudio();
