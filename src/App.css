@@ -24,8 +24,11 @@ main {
 canvas{
   display: block;
   width: strech;
-  height: auto;
+  height: 300px;
   background:transparent;
+  border: 0px;
+  border-radius: 0px;
+  margin: 24px 0px;
 
 }
 

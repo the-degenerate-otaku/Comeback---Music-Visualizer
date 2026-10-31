@@ -336,7 +336,7 @@ export default function App() {
         }
 
 
-        ctx.fillStyle = "#5c0808";
+        ctx.fillStyle = "#4263ff";
         for (let bar = 0; bar < barCount; bar++) {
           const start = Math.floor(
             (bar / barCount) * frequencies.length
@@ -367,7 +367,7 @@ export default function App() {
         return;
 
       }
-      ctx.strokeStyle = "#150458f0";
+      ctx.strokeStyle = "#4263ff";
       ctx.lineWidth = 2;
       ctx.beginPath();
 
@@ -470,7 +470,7 @@ export default function App() {
         />
 
         <p> {file ? file.name : "Choose your Slop "} </p>
-        <audio ref={audioRef} controls onPlay={() => {
+        <audio ref={audioRef} onPlay={() => {
           setIsPlaying(true);
           connectAudio();
         }}
