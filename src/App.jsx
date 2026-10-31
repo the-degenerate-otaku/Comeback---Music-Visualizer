@@ -550,8 +550,9 @@ export default function App() {
         >
           {muted || volume === 0 ? "Unmute" : "Mute"}
         </button>
-        <div>
+        <div className="Seeker">
           <span>{formatTime(currentTime)}</span>
+
           <div className="waveform-progress-seaker">
 
             <svg

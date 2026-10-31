@@ -46,11 +46,26 @@ main:fullscreen {
 
 .waveform-progress-seaker {
   display: grid;
+  flex: 1;
+  min-width: 0px;
 }
 
-.waveform-progress-seaker > svg,
+.waveform-progress-seaker svg {
+  display: block;
+  grid-area: 1 / 1;
+  pointer-events: none;
+}
+
 .waveform-progress-seaker-input {
   grid-area: 1 / 1;
+  z-index: 2;
+  width: strech;
+  min-width: 0px;
+  height: 60px;
+  margin: 0px;
+  opacity: 0;
+  cursor: ew-resize;
+  touch-action: none;
 }
 
 .waveform-progress-seaker-input {
@@ -164,3 +179,52 @@ main > [role="alert"] {
   padding: 0px;
   list-style: none;
 }
+
+.Playlist-pane li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0px;
+  border-bottom: 1px solid #242424;
+}
+
+.Playlist-pane li button {
+  padding: 6px;
+  color: inherit;
+  background: transparent;
+  border: 0px;
+
+}
+
+.Playlist-pane li button:first-child {
+  flex: 1;
+  min-width: 0px;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-pane [aria-current = "true"] {
+  color: #1f39bc;
+
+}
+
+.Playlist-pane li button:hover {
+  color: #de1e14;
+}
+
+.Seeker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0px;
+
+}
+
+.Seeker span {
+  min-width: 44px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
