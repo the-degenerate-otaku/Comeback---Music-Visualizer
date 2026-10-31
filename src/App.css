@@ -14,17 +14,19 @@ body {
 }
 
 main {
-  margin: auto;
-  padding: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap:32px;
+  min-height: 720px;
+  padding: 28px;
 }
 
 canvas{
   display: block;
-  width: 100%;
+  width: strech;
   height: auto;
-  background: #000000;
-  border: 1px solid #000000;
-  border-radius: 14px;
+  background:transparent;
+
 }
 
 audio {
@@ -62,4 +64,103 @@ main:fullscreen {
 .waveform-progress-seaker:focus-within {
   outline: 2px solid #fe000072;
   outline-offset: 4px;
+}
+
+.Flaghead {
+  display :flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 40px;
+
+}
+
+.Flaghead h1{
+  margin: 0;
+  font: 400 36px Georgia, serif;
+  color: #ffffff;
+}
+
+button, select, input {
+
+  font: inherit;
+}
+button, select{
+  padding: 8px 12px;
+  color: #ffffff;
+  background: transparent;
+  border: 1px solid #222222;
+  border-radius: 4px;
+}
+
+button:not(:disabled) {cursor: pointer;}
+button:disabled{opacity: 0.4;}
+
+.Playlist-pane, .player-pane { 
+  min-width: 0px;
+}
+.Playlist-pane {
+  padding-left: 24px;
+  border-left: 1px solid #242424;
+}
+
+.Playlist-pane h2 {
+  margin: 0px 0px 24px;
+  font: 400 36px Georgia, serif;
+
+}
+
+.Playlist-pane input[type="search"] {
+  display: block;
+  width: strech;
+  margin: 16px 0px;
+  padding: 12px;
+  color: inherit;
+  background: transparent ;
+  border: 1px solid #333;
+}
+
+main > [role="alert"] {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 800px) {
+  main {
+    grid-template-columns: minmax(0px, 1fr);
+    padding: 20px;
+  }
+
+  .Playlist-pane {
+    padding: 24px 0px 0px;
+    border: 0px;
+    border-top: 1px solid #242424;
+  }
+}
+
+.Flaghead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.Flaghead h1 {
+  margin: 0px;
+  color: #ffffff;
+  font: 400 30px Georgia, serif;
+}
+
+.Flaghead button {
+  padding: 8px 12px;
+  color: #ffffff;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.Playlist-pane ol {
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
 }

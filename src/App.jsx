@@ -425,200 +425,201 @@ export default function App() {
 
   return (
     <main ref={playerRef}>
-      <button
-        type="button"
-        onClick={toggleFullScreen}>
-        Toggle FullScreen
-      </button>
-      <h1>Music go be wave cause why not ?</h1>
-      <label>
-        Visuals:{""}
-        <select value={mode}
-          onChange={(event) =>
-            setMode(event.target.value)}
-        >
-          <option value="waveform">Waveform</option>
-          <option value="spectrum">Specturm</option>
-        </select>
-      </label>
+      <div className="player-pane">
+        <header className="Flaghead">
+          <h1>WaveGarden</h1>
+          <button onClick={toggleFullScreen}>
+            FullScreen
+          </button>
+        </header>
+        <label>
+          Visuals:{""}
+          <select value={mode}
+            onChange={(event) =>
+              setMode(event.target.value)}
+          >
+            <option value="waveform">Waveform</option>
+            <option value="spectrum">Specturm</option>
+          </select>
+        </label>
 
-      <canvas
-        ref={canvasRef}
-        width="1000"
-        height="400"
-        aria-label="Visualizer?"
+        <canvas
+          ref={canvasRef}
+          width="1000"
+          height="400"
+          aria-label="Visualizer?"
 
-      />
-
-      <input
-        type="file"
-        accept="audio/*"
-        multiple
-        onChange={(event) => {
-          const selectedFiles = Array.from(event.target.files ?? []);
-
-
-          if (selectedFiles.length > 0) {
-            playOnLoadRef.current = false;
-            setPlaylist(selectedFiles);
-            setFile(selectedFiles[0]);
-          }
-
-          event.target.value = "";
-        }}
-      />
-
-      <p> {file ? file.name : "Choose your Slop "} </p>
-      <audio ref={audioRef} controls onPlay={() => {
-        setIsPlaying(true);
-        connectAudio();
-      }}
-
-        onTimeUpdate={(event) => {
-          setCurrentTime(event.currentTarget.currentTime);
-        }}
-        onDurationChange={(event) => {
-          const length = event.currentTarget.duration;
-          setDuration(Number.isFinite(length) ? length : 0);
-        }}
-        onEmptied={() => {
-          setCurrentTime(0);
-          setDuration(0);
-        }}
-        onPause={() => setIsPlaying(false)}
-        onCanPlay={playLoadedTrack} onEnded={() => {
-          setIsPlaying(false);
-          handleTrackEnded();
-        }}
-
-        onVolumeChange={(event) => {
-          setVolume(event.currentTarget.volume);
-          setMuted(event.currentTarget.muted);
-        }}
-      />
-
-
-      <button
-        type="button"
-        onClick={togglePlayback}
-        disabled={!file}>
-        {isPlaying ? "Pause" : "Play"}
-      </button>
-
-      <label>
-        Volume
-
+        />
 
         <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={volume}
+          type="file"
+          accept="audio/*"
+          multiple
           onChange={(event) => {
-            const level = Number(event.target.value);
-            audioRef.current.volume = level;
+            const selectedFiles = Array.from(event.target.files ?? []);
 
-            setVolume(level);
-            audioRef.current.volume = level;
 
-            if (level > 0) {
-              setMuted(false);
-              audioRef.current.muted = false;
+            if (selectedFiles.length > 0) {
+              playOnLoadRef.current = false;
+              setPlaylist(selectedFiles);
+              setFile(selectedFiles[0]);
             }
+
+            event.target.value = "";
           }}
         />
-      </label>
 
-      <span>{Math.round(volume * 100)}%</span>
-
-      <button
-        type="button"
-        onClick={() => {
-          const audio = audioRef.current;
-
-          if (audio.muted || audio.volume === 0) {
-            if (audio.volume === 0) {
-              audio.volume = 0.5;
-            }
-            audio.muted = false;
-          } else {
-            audio.muted = true;
-          }
+        <p> {file ? file.name : "Choose your Slop "} </p>
+        <audio ref={audioRef} controls onPlay={() => {
+          setIsPlaying(true);
+          connectAudio();
         }}
-      >
-        {muted || volume === 0 ? "Unmute" : "Mute"}
-      </button>
-      <div>
-        <span>{formatTime(currentTime)}</span>
-        <div className="waveform-progress-seaker">
 
-          <svg
-            viewBox="0 0 800 60"
-            preserveAspectRatio="none"
-            width="100%"
-            height="60"
-            aria-hidden="true"
-          >
-            {waveformPeaks.map((peak, index) => {
-              const slot = 800 / waveformPeaks.length
-              const height = Math.max(2, peak * 56);
-              const played = duration > 0 && index / waveformPeaks.length < currentTime / duration;
+          onTimeUpdate={(event) => {
+            setCurrentTime(event.currentTarget.currentTime);
+          }}
+          onDurationChange={(event) => {
+            const length = event.currentTarget.duration;
+            setDuration(Number.isFinite(length) ? length : 0);
+          }}
+          onEmptied={() => {
+            setCurrentTime(0);
+            setDuration(0);
+          }}
+          onPause={() => setIsPlaying(false)}
+          onCanPlay={playLoadedTrack} onEnded={() => {
+            setIsPlaying(false);
+            handleTrackEnded();
+          }}
 
-              return (
-                <rect
-                  key={index}
-                  x={index * slot}
-                  y={(60 - height) / 2}
-                  width={slot * 0.7}
-                  height={height}
-                  rx="1"
-                  fill={played ? "#fefefe" : "#ff0000fe"}
-                />
-              );
-            })}
-          </svg>
+          onVolumeChange={(event) => {
+            setVolume(event.currentTarget.volume);
+            setMuted(event.currentTarget.muted);
+          }}
+        />
+
+
+        <button
+          type="button"
+          onClick={togglePlayback}
+          disabled={!file}>
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+
+        <label>
+          Volume
+
 
           <input
-            className="waveform-progress-seaker-input"
             type="range"
-            aria-label="Playback"
             min="0"
-            max={duration || 1}
-            step={0.1}
-            value={Math.min(currentTime, duration || 0)}
-            disabled={!file || duration <= 0}
+            max="1"
+            step="0.01"
+            value={volume}
             onChange={(event) => {
-              const position = Number(event.target.value);
-              audioRef.current.currentTime = position;
-              setCurrentTime(position);
-            }
-            }
+              const level = Number(event.target.value);
+              audioRef.current.volume = level;
+
+              setVolume(level);
+              audioRef.current.volume = level;
+
+              if (level > 0) {
+                setMuted(false);
+                audioRef.current.muted = false;
+              }
+            }}
           />
+        </label>
+
+        <span>{Math.round(volume * 100)}%</span>
+
+        <button
+          type="button"
+          onClick={() => {
+            const audio = audioRef.current;
+
+            if (audio.muted || audio.volume === 0) {
+              if (audio.volume === 0) {
+                audio.volume = 0.5;
+              }
+              audio.muted = false;
+            } else {
+              audio.muted = true;
+            }
+          }}
+        >
+          {muted || volume === 0 ? "Unmute" : "Mute"}
+        </button>
+        <div>
+          <span>{formatTime(currentTime)}</span>
+          <div className="waveform-progress-seaker">
+
+            <svg
+              viewBox="0 0 800 60"
+              preserveAspectRatio="none"
+              width="100%"
+              height="60"
+              aria-hidden="true"
+            >
+              {waveformPeaks.map((peak, index) => {
+                const slot = 800 / waveformPeaks.length
+                const height = Math.max(2, peak * 56);
+                const played = duration > 0 && index / waveformPeaks.length < currentTime / duration;
+
+                return (
+                  <rect
+                    key={index}
+                    x={index * slot}
+                    y={(60 - height) / 2}
+                    width={slot * 0.7}
+                    height={height}
+                    rx="1"
+                    fill={played ? "#fefefe" : "#ff0000fe"}
+                  />
+                );
+              })}
+            </svg>
+
+            <input
+              className="waveform-progress-seaker-input"
+              type="range"
+              aria-label="Playback"
+              min="0"
+              max={duration || 1}
+              step={0.1}
+              value={Math.min(currentTime, duration || 0)}
+              disabled={!file || duration <= 0}
+              onChange={(event) => {
+                const position = Number(event.target.value);
+                audioRef.current.currentTime = position;
+                setCurrentTime(position);
+              }
+              }
+            />
+          </div>
+          <span>{formatTime(duration)}</span>
         </div>
-        <span>{formatTime(duration)}</span>
-      </div>
 
-      <div>
-        <button
-          type="button"
-          disabled={playlist.indexOf(file) <= 0}
-          onClick={() => changeTrack(-1)}>
-          Previous
-        </button>
+        <div>
+          <button
+            type="button"
+            disabled={playlist.indexOf(file) <= 0}
+            onClick={() => changeTrack(-1)}>
+            Previous
+          </button>
 
-        <button
-          type="button"
-          disabled={playlist.indexOf(file) === -1 ||
-            playlist.indexOf(file) >= playlist.length - 1
-          }
-          onClick={() => changeTrack(1)} >
-          Next
-        </button>
+          <button
+            type="button"
+            disabled={playlist.indexOf(file) === -1 ||
+              playlist.indexOf(file) >= playlist.length - 1
+            }
+            onClick={() => changeTrack(1)} >
+            Next
+          </button>
+        </div>
       </div>
-      <section>
+      <section className="Playlist-pane">
         <h2>Playlist</h2>
-        <p> Waveform : {waveformPeaks.length} </p>
         <label>
           Repeat
           <select
