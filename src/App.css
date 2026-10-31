@@ -276,3 +276,52 @@ input[type="file"]::file-selector-button {
 input[type="file"]::file-selector-button:hover {
   border-color: #4263ff;
 }
+
+input[type="file"] {
+  color :#888;
+  font-size: 12px;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 12px;
+  color: #ffffff;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+  border-color: #4263ff;
+
+}
+
+.Visualising {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: #888;
+  font-size: 12px;
+}
+
+select option{
+  color: #ffffff;
+  background: #111;
+}
+
+.Asian {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+.Asian button:nth-child(2) {
+  width: 64px;
+  height: 64px;
+  padding: 0px;
+  border-radius: 32px;
+  border-color: #ffffff;
+}

@@ -432,7 +432,7 @@ export default function App() {
             FullScreen
           </button>
         </header>
-        <label>
+        <label className="Visualising">
           Visuals:{""}
           <select value={mode}
             onChange={(event) =>
@@ -497,14 +497,6 @@ export default function App() {
             setMuted(event.currentTarget.muted);
           }}
         />
-
-
-        <button
-          type="button"
-          onClick={togglePlayback}
-          disabled={!file}>
-          {isPlaying ? "Pause" : "Play"}
-        </button>
 
         <label>
           Volume
@@ -601,12 +593,19 @@ export default function App() {
           <span>{formatTime(duration)}</span>
         </div>
 
-        <div>
-          <button
+        <div className="Asian">  
+           <button
             type="button"
             disabled={playlist.indexOf(file) <= 0}
             onClick={() => changeTrack(-1)}>
             Previous
+          </button>
+
+          <button
+            type="button"
+            onClick={togglePlayback}
+            disabled={!file}>
+            {isPlaying ? "Pause" : "Play"}
           </button>
 
           <button
